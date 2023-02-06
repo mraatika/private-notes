@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: Private Notes API - OpenAPI 3.0
+  description: |-
+    This is an OpenAPI definition for private-notes project.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: https://a.b
+    description: 'Development server'
+paths:
+  /collections:
+    get:
+      tags:
+        - collection
+      summary: List all collections
+      description: Lists all available collections with minimal data set
+      operationId: listCollections
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Collection'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedError'
+        '500':
+          $ref: '#/components/responses/GeneralError'
+      security:
+        - api_key: []
+
+    post:
+      tags:
+        - collection
+      summary: Create a new collection
+      description: Create a new empty collection
+      operationId: createCollection
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: My New Collection
+              required:
+                - name
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedError'
+        '500':
+          $ref: '#/components/responses/GeneralError'
+      security:
+        - api_key: []
+
+    put:
+      tags:
+        - collection
+      summary: Update an existing collection
+      operationId: updateCollection
+      requestBody:
+        description: The collection object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedError'
+        '500':
+          $ref: '#/components/responses/GeneralError'
+      security:
+        - api_key: []
+
+  /collections/{collectionId}:
+    get:
+      tags:
+        - collection
+      summary: Get a collection
+      description: Get a single collection with full data by it's id
+      operationId: getCollection
+      parameters:
+        - name: collectionId
+          in: path
+          description: ID of the collection
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedError'
+        '500':
+          $ref: '#/components/responses/GeneralError'
+      security:
+        - api_key: []
+
+    delete:
+      tags:
+        - collection
+      summary: Delete collection
+      description: Delete a collection by collectionId
+      operationId: deleteCollection
+      parameters:
+        - name: collectionId
+          in: path
+          description: ID of the collection that needs to be deleted
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowedError'
+        '500':
+          $ref: '#/components/responses/GeneralError'
+      security:
+        - api_key: []
+
+components:
+  schemas:
+    Collection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+      required:
+        - id
+        - name
+    Note:
+      type: object
+      properties:
+        type:
+          enum:
+            - NOTE
+            - BOOKMARK
+            - LIST
+        value:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - type
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 1000
+        message:
+          type: string
+          example: Error happened while updating a collection
+      required:
+        - message
+  responses:
+    CollectionResponse:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Collection'
+
+    GeneralError:
+      description: Error returned in case of Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    MethodNotAllowedError:
+      description: Method not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFoundError:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header

@@ -1,0 +1,8 @@
+# sam build
+.aws-sam
+
+# ide
+.vscode
+
+# misc
+node_modules
