@@ -19,13 +19,16 @@ export const successResponse = (body: unknown) =>
   withCorsHeaders({
     statusCode: 200,
     body: JSON.stringify(body),
-    headers: {
-      'Content-type': 'application/json',
-    },
   });
 
 export const serverErrorResponse = (body: ErrorResponseBody) =>
   withCorsHeaders({
     statusCode: 500,
+    body: JSON.stringify(body),
+  });
+
+export const notFoundResponse = (body: ErrorResponseBody) =>
+  withCorsHeaders({
+    statusCode: 404,
     body: JSON.stringify(body),
   });

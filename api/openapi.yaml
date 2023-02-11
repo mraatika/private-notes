@@ -228,13 +228,11 @@ components:
         updatedAt:
           type: string
           format: date-time
-        notes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Note'
       required:
         - id
         - name
+        - createdAt
+        - updatedAt
     Note:
       type: object
       properties:

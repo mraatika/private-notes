@@ -33,7 +33,6 @@ export const createCollection = async (event: APIGatewayEvent) => {
     ...body,
     id: uuid(),
     createdAt: new Date().toUTCString(),
-    notes: [],
   };
 
   const params = {

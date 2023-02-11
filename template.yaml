@@ -21,7 +21,7 @@ Globals:
     Environment:
       Variables:
         # Make table name accessible as environment variable from function code during execution
-        SAMPLE_TABLE: !Ref SampleTable
+        SAMPLE_TABLE: !Ref CollectionsTable
 
 Parameters:
   EnvironmentParameter:
@@ -71,9 +71,9 @@ Resources:
       Handler: list-collections.listCollections
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-ListCollections'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref CollectionsTable
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -89,9 +89,9 @@ Resources:
       Handler: create-collection.createCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-CreateCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref CollectionsTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -108,7 +108,7 @@ Resources:
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-UpdateCollection'
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref CollectionsTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -124,9 +124,9 @@ Resources:
       Handler: get-collection.getCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-GetCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref CollectionsTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -142,9 +142,9 @@ Resources:
       Handler: delete-collection.deleteCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-DeleteCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref SampleTable
+            TableName: !Ref CollectionsTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -158,9 +158,10 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 
   # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
-  SampleTable:
+  CollectionsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
+      TableName: !Sub 'private-notes-${EnvironmentParameter}-table-collections'
       PrimaryKey:
         Name: id
         Type: String
