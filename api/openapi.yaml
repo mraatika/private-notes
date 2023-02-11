@@ -1,4 +1,5 @@
 openapi: 3.0.3
+
 info:
   title: Private Notes API - OpenAPI 3.0
   description: |-
@@ -7,17 +8,46 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.11
+
+x-amazon-apigateway-request-validators:
+  all:
+    validateRequestBody: true
+    validateRequestParameters: true
+  params:
+    validateRequestBody: true
+    validateRequestParameters: true
+  body:
+    validateRequestBody: true
+    validateRequestParameters: false
+
+x-amazon-apigateway-cors':
+  allowOrigins:
+    - '"*"'
+
+x-amazon-apigateway-api-key-source: HEADER
+
 servers:
-  - url: https://a.b
-    description: 'Development server'
+  - url: http://localhost:3000
+    description: 'Local server'
+  - url: https://av21zo3gbj.execute-api.eu-north-1.amazonaws.com/dev/
+    description: 'Development'
+
 paths:
   /collections:
     get:
       tags:
         - collection
+      operationId: listCollections
       summary: List all collections
       description: Lists all available collections with minimal data set
-      operationId: listCollections
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListCollections.Arn}/invocations
+        httpMethod: POST
+        timeoutInMillis: 3000
+        credentials:
+          Fn::Sub: ${ApiRole.Arn}
+        type: 'aws_proxy'
       responses:
         '200':
           description: Successful operation
@@ -37,9 +67,18 @@ paths:
     post:
       tags:
         - collection
+      operationId: createCollection
       summary: Create a new collection
       description: Create a new empty collection
-      operationId: createCollection
+      x-amazon-apigateway-request-validator: body
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateCollection.Arn}/invocations
+        httpMethod: POST
+        timeoutInMillis: 3000
+        credentials:
+          Fn::Sub: ${ApiRole.Arn}
+        type: 'aws_proxy'
       requestBody:
         description: Create a new pet in the store
         content:
@@ -68,8 +107,9 @@ paths:
     put:
       tags:
         - collection
-      summary: Update an existing collection
       operationId: updateCollection
+      summary: Update an existing collection
+      x-amazon-apigateway-request-validator: body
       requestBody:
         description: The collection object
         content:
@@ -77,6 +117,14 @@ paths:
             schema:
               $ref: '#/components/schemas/Collection'
         required: true
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateCollection.Arn}/invocations
+        httpMethod: POST
+        timeoutInMillis: 3000
+        credentials:
+          Fn::Sub: ${ApiRole.Arn}
+        type: 'aws_proxy'
       responses:
         '200':
           $ref: '#/components/responses/CollectionResponse'
@@ -95,9 +143,18 @@ paths:
     get:
       tags:
         - collection
+      operationId: getCollection
       summary: Get a collection
       description: Get a single collection with full data by it's id
-      operationId: getCollection
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCollection.Arn}/invocations
+        httpMethod: POST
+        timeoutInMillis: 3000
+        credentials:
+          Fn::Sub: ${ApiRole.Arn}
+        type: 'aws_proxy'
       parameters:
         - name: collectionId
           in: path
@@ -130,6 +187,15 @@ paths:
       summary: Delete collection
       description: Delete a collection by collectionId
       operationId: deleteCollection
+      x-amazon-apigateway-request-validator: params
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteCollection.Arn}/invocations
+        httpMethod: POST
+        timeoutInMillis: 3000
+        credentials:
+          Fn::Sub: ${ApiRole.Arn}
+        type: 'aws_proxy'
       parameters:
         - name: collectionId
           in: path
@@ -209,7 +275,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Collection'
-
     GeneralError:
       description: Error returned in case of Server Error
       content:

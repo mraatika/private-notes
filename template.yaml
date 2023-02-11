@@ -3,7 +3,7 @@
 
 # The AWSTemplateFormatVersion identifies the capabilities of the template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
   Infrastructure for private-notes project
 
@@ -11,51 +11,61 @@ Description: >-
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Function:
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    MemorySize: 128
+    Timeout: 100
+    Environment:
+      Variables:
+        # Make table name accessible as environment variable from function code during execution
+        SAMPLE_TABLE: !Ref SampleTable
+
+Parameters:
+  EnvironmentParameter:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: dev, prod
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
+  ApiBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
   PrivateNotesApi:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: api
-      Cors:
-        AllowHeaders: "'*'"
-        AllowMethods: "'POST,GET,PUT,DELETE,OPTIONS'"
-        AllowOrigin: "'*'"
-      Auth:
-        AddDefaultAuthorizerToCorsPreflight: False
-        ApiKeyRequired: True
+      Name: !Sub 'PrivateNotes-Api-${EnvironmentParameter}'
+      StageName: !Ref EnvironmentParameter
+      MethodSettings:
+        - LoggingLevel: INFO
+          ResourcePath: '/*' # allows for logging on any resource
+          HttpMethod: '*' # allows for logging on any method
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./api/openapi.yaml
 
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  listCollections:
+  ListCollections:
     Type: AWS::Serverless::Function
     Properties:
       Handler: list-collections.listCollections
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-ListCollections'
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        GetCollection:
-          Type: Api
-          Properties:
-            RestApiId: !Ref PrivateNotesApi
-            Path: /collections
-            Method: GET
-            Auth:
-              ApiKeyRequired: True
-
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -65,31 +75,16 @@ Resources:
         EntryPoints:
           - src/handlers/list-collections.ts
 
-  createCollection:
+  CreateCollection:
     Type: AWS::Serverless::Function
     Properties:
       Handler: create-collection.createCollection
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-CreateCollection'
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            RestApiId: !Ref PrivateNotesApi
-            Path: /collections
-            Method: POST
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Format: cjs
@@ -98,30 +93,15 @@ Resources:
         EntryPoints:
           - src/handlers/create-collection.ts
 
-  updateCollection:
+  UpdateCollection:
     Type: AWS::Serverless::Function
     Properties:
       Handler: update-collection.updateCollection
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-UpdateCollection'
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            RestApiId: !Ref PrivateNotesApi
-            Path: /collections
-            Method: PUT
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Format: cjs
@@ -130,31 +110,16 @@ Resources:
         EntryPoints:
           - src/handlers/update-collection.ts
 
-  getCollection:
+  GetCollection:
     Type: AWS::Serverless::Function
     Properties:
       Handler: get-collection.getCollection
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-GetCollection'
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            RestApiId: !Ref PrivateNotesApi
-            Path: /collections/{collectionId}
-            Method: GET
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Format: cjs
@@ -163,31 +128,16 @@ Resources:
         EntryPoints:
           - src/handlers/get-collection.ts
 
-  deleteCollection:
+  DeleteCollection:
     Type: AWS::Serverless::Function
     Properties:
       Handler: delete-collection.deleteCollection
-      Runtime: nodejs18.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Timeout: 100
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-DeleteCollection'
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
             TableName: !Ref SampleTable
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          SAMPLE_TABLE: !Ref SampleTable
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            RestApiId: !Ref PrivateNotesApi
-            Path: /collections/{collectionId}
-            Method: DELETE
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Format: cjs
@@ -210,7 +160,42 @@ Resources:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
 
+  ApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: !Sub '/private-notes/${EnvironmentParameter}/serviceRoles/'
+      RoleName: !Sub 'private-notes-${EnvironmentParameter}-api-execution-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+      Policies:
+        - PolicyName: !Sub 'private-notes-${EnvironmentParameter}-api-execution-role-policy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !Sub ${ListCollections.Arn}
+                  - !Sub ${CreateCollection.Arn}
+                  - !Sub ${UpdateCollection.Arn}
+                  - !Sub ${GetCollection.Arn}
+                  - !Sub ${DeleteCollection.Arn}
+
+  Account:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !Sub ${ApiRole.Arn}
+
 Outputs:
   WebEndpoint:
     Description: 'API Gateway endpoint URL for Prod stage'
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/api/'
+    Value: !Sub 'https://${PrivateNotesApi}.execute-api.${AWS::Region}.amazonaws.com/${EnvironmentParameter}/'
