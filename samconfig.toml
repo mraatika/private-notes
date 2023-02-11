@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "private-notes-infra-dev"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-11bgk3msj7rb"
+s3_prefix = "private-notes-infra-dev"
+region = "eu-north-1"
+confirm_changeset = true
+capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"]
+parameter_overrides = "EnvironmentParameter=\"dev\""
+image_repositories = []
