@@ -35,10 +35,7 @@ Parameters:
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  ApiBucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-
+  # Api gateway resource
   PrivateNotesApi:
     Type: AWS::Serverless::Api
     Properties:
