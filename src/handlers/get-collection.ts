@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayEvent } from 'aws-lambda';
 import {
   methodNotAllowedResponse,
+  notFoundResponse,
   serverErrorResponse,
   successResponse,
 } from '../responses';
@@ -27,7 +28,10 @@ export const getCollection = async (event: APIGatewayEvent) => {
   try {
     const data = await ddbDocClient.send(new GetCommand(params));
     const item = data.Item;
-    return successResponse(item);
+
+    return item
+      ? successResponse(item)
+      : notFoundResponse({ message: 'Item not found' });
   } catch (err) {
     console.log(`getCollection(): Getting collection ${id} failed for`, err);
     return serverErrorResponse({ message: (err as Error).message });
