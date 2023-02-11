@@ -20,10 +20,6 @@ x-amazon-apigateway-request-validators:
     validateRequestBody: true
     validateRequestParameters: false
 
-x-amazon-apigateway-cors':
-  allowOrigins:
-    - '"*"'
-
 x-amazon-apigateway-api-key-source: HEADER
 
 servers:
@@ -303,5 +299,6 @@ components:
   securitySchemes:
     api_key:
       type: apiKey
-      name: x-api-key
       in: header
+      name: x-api-key
+      x-amazon-apigateway-api-key-source: HEADER

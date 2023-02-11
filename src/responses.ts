@@ -1,28 +1,31 @@
 import { components } from '../types/api';
 type ErrorResponseBody = components['schemas']['Error'];
 
-const defaultHeaders = {
-  'Access-Control-Allow-Headers': '*',
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE',
+  'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,PUT,DELETE',
+  'Access-Control-Allow-Headers': '*',
 };
 
-const withDefaultHeaders = (response: Record<string, unknown>) => ({
+const withCorsHeaders = (response: Record<string, unknown>) => ({
   ...response,
-  headers: { ...(response.headers ?? {}), ...defaultHeaders },
+  headers: { ...(response.headers ?? {}), ...corsHeaders },
 });
 
 export const methodNotAllowedResponse = () =>
-  withDefaultHeaders({ statusCode: 405 });
+  withCorsHeaders({ statusCode: 405 });
 
 export const successResponse = (body: unknown) =>
-  withDefaultHeaders({
+  withCorsHeaders({
     statusCode: 200,
     body: JSON.stringify(body),
+    headers: {
+      'Content-type': 'application/json',
+    },
   });
 
 export const serverErrorResponse = (body: ErrorResponseBody) =>
-  withDefaultHeaders({
+  withCorsHeaders({
     statusCode: 500,
     body: JSON.stringify(body),
   });

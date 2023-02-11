@@ -50,6 +50,12 @@ Resources:
           Name: AWS::Include
           Parameters:
             Location: ./api/openapi.yaml
+      Auth:
+        ApiKeyRequired: true
+      Cors:
+        AllowMethods: "'OPTIONS,POST,GET,PUT,DELETE'"
+        AllowOrigin: "'*'"
+        AllowHeaders: "'X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
 
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -191,6 +197,29 @@ Resources:
     Type: AWS::ApiGateway::Account
     Properties:
       CloudWatchRoleArn: !Sub ${ApiRole.Arn}
+
+  ApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId: !Ref PrivateNotesApi
+          Stage: !Ref EnvironmentParameter
+      Description: Usage plan for default api key
+      UsagePlanName: !Sub 'private-notes-${EnvironmentParameter}-api-usage-plan'
+
+  ApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub 'private-notes-${EnvironmentParameter}-api-key'
+      Description: !Sub 'Default api key for ${EnvironmentParameter} environment'
+      Enabled: true
+
+  ApiUsagePlanKey:
+    Type: 'AWS::ApiGateway::UsagePlanKey'
+    Properties:
+      KeyId: !Ref ApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref ApiUsagePlan
 
 Outputs:
   WebEndpoint:
