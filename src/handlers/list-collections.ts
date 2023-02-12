@@ -1,31 +1,20 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import {
   methodNotAllowedResponse,
   serverErrorResponse,
   successResponse,
 } from '../responses';
-
-const client = new DynamoDBClient({});
-const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = process.env.SAMPLE_TABLE;
+import CollectionService from '../services/CollectionService';
 
 export const listCollections = async (event: APIGatewayEvent) => {
   if (event.httpMethod !== 'GET') {
     return methodNotAllowedResponse();
   }
 
-  console.info('listCollections(): received', event);
-
-  const params = {
-    TableName: tableName,
-  };
+  console.info('listCollections(): Received request to list collections');
 
   try {
-    const data = await ddbDocClient.send(new ScanCommand(params));
-    const items = data.Items;
-
+    const items = await CollectionService.listCollections();
     console.info(`listCollections(): Found ${items?.length} collection(s)`);
     return successResponse(items);
   } catch (err) {

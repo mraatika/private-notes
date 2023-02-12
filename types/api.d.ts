@@ -37,21 +37,26 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    StoredEntity: {
+      /** Format: int64 */
+      createdAt?: number;
+      /** Format: int64 */
+      updatedAt?: number;
+      /** Format: int64 */
+      removedAt?: number;
+    };
     Collection: {
       /** Format: uuid */
-      id: string;
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-      notes?: (components["schemas"]["Note"])[];
-    };
+      collectionId: string;
+      name: string;
+      description?: string;
+    } & components["schemas"]["StoredEntity"];
     Note: {
-      /** @enum {unknown} */
-      type: "NOTE" | "BOOKMARK" | "LIST";
-      value?: string;
-      tags?: (string)[];
-    };
+      /** Format: uuid */
+      noteId: string;
+      value: string;
+      tags: (string)[];
+    } & components["schemas"]["StoredEntity"];
     Error: {
       /**
        * Format: int32 

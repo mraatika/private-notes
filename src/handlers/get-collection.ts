@@ -1,5 +1,3 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayEvent } from 'aws-lambda';
 import {
   methodNotAllowedResponse,
@@ -7,33 +5,29 @@ import {
   serverErrorResponse,
   successResponse,
 } from '../responses';
-
-const client = new DynamoDBClient({});
-const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = process.env.SAMPLE_TABLE;
+import CollectionService from '../services/CollectionService';
 
 export const getCollection = async (event: APIGatewayEvent) => {
   if (event.httpMethod !== 'GET') {
     return methodNotAllowedResponse();
   }
-  const id = event.pathParameters?.collectionId;
+  const collectionId = event.pathParameters?.collectionId as string;
 
-  console.info('getCollection(): Received request for collection:', id);
-
-  const params = {
-    TableName: tableName,
-    Key: { id },
-  };
+  console.info(
+    'getCollection(): Received request for collection:',
+    collectionId,
+  );
 
   try {
-    const data = await ddbDocClient.send(new GetCommand(params));
-    const item = data.Item;
-
-    return item
-      ? successResponse(item)
-      : notFoundResponse({ message: 'Item not found' });
+    const collection = await CollectionService.getCollection(collectionId);
+    return collection
+      ? successResponse(collection)
+      : notFoundResponse({ message: `Item ${collectionId} not found` });
   } catch (err) {
-    console.log(`getCollection(): Getting collection ${id} failed for`, err);
+    console.log(
+      `getCollection(): Getting collection ${collectionId} failed for`,
+      err,
+    );
     return serverErrorResponse({ message: (err as Error).message });
   }
 };

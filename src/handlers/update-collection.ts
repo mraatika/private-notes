@@ -1,18 +1,11 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayEvent } from 'aws-lambda';
-import { components } from '../../types/api';
+import { Collection } from '../../types';
 import {
   methodNotAllowedResponse,
   serverErrorResponse,
   successResponse,
 } from '../responses';
-
-type Collection = components['schemas']['Collection'];
-
-const client = new DynamoDBClient({});
-const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = process.env.SAMPLE_TABLE;
+import CollectionService from '../services/CollectionService';
 
 export const updateCollection = async (event: APIGatewayEvent) => {
   if (event.httpMethod !== 'PUT') {
@@ -25,20 +18,14 @@ export const updateCollection = async (event: APIGatewayEvent) => {
   );
 
   const body: Collection = JSON.parse(event.body ?? '{}');
-  const update: Collection = { ...body, updatedAt: new Date().toUTCString() };
-
-  const params = {
-    TableName: tableName,
-    Item: update,
-  };
 
   try {
-    const data = await ddbDocClient.send(new PutCommand(params));
-    console.info(`updateCollection(): Collection updated successfully`, data);
+    const update = await CollectionService.updateCollection(body);
+    console.info(`updateCollection(): Collection updated successfully`, update);
     return successResponse(update);
   } catch (err) {
     console.info(
-      `updateCollection(): Updating collection ${body.id} failed for`,
+      `updateCollection(): Updating collection ${body.collectionId} failed for`,
       err,
     );
     return serverErrorResponse({ message: (err as Error).message });

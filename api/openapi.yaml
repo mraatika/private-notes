@@ -25,8 +25,6 @@ x-amazon-apigateway-api-key-source: HEADER
 servers:
   - url: http://localhost:3000
     description: 'Local server'
-  - url: https://av21zo3gbj.execute-api.eu-north-1.amazonaws.com/dev/
-    description: 'Development'
 
 paths:
   /collections:
@@ -40,7 +38,7 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListCollections.Arn}/invocations
         httpMethod: POST
-        timeoutInMillis: 3000
+        timeoutInMillis: 15000
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
@@ -71,7 +69,7 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateCollection.Arn}/invocations
         httpMethod: POST
-        timeoutInMillis: 3000
+        timeoutInMillis: 15000
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
@@ -117,7 +115,7 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateCollection.Arn}/invocations
         httpMethod: POST
-        timeoutInMillis: 3000
+        timeoutInMillis: 15000
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
@@ -147,7 +145,7 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCollection.Arn}/invocations
         httpMethod: POST
-        timeoutInMillis: 3000
+        timeoutInMillis: 15000
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
@@ -188,7 +186,7 @@ paths:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteCollection.Arn}/invocations
         httpMethod: POST
-        timeoutInMillis: 3000
+        timeoutInMillis: 15000
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
@@ -216,39 +214,52 @@ paths:
 
 components:
   schemas:
-    Collection:
+    StoredEntity:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         createdAt:
-          type: string
-          format: date-time
+          type: number
+          format: int64
         updatedAt:
-          type: string
-          format: date-time
-      required:
-        - id
-        - name
-        - createdAt
-        - updatedAt
+          type: number
+          format: int64
+        removedAt:
+          type: number
+          format: int64
+
+    Collection:
+      allOf:
+        - type: object
+          required:
+            - collectionId
+            - name
+          properties:
+            collectionId:
+              type: string
+              format: uuid
+            name:
+              type: string
+        - $ref: '#/components/schemas/StoredEntity'
+
     Note:
-      type: object
-      properties:
-        type:
-          enum:
-            - NOTE
-            - BOOKMARK
-            - LIST
-        value:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-      required:
-        - type
+      allOf:
+        - type: object
+          required:
+            - noteId
+            - type
+            - value
+            - tags
+          properties:
+            noteId:
+              type: string
+              format: uuid
+            value:
+              type: string
+            tags:
+              type: array
+              items:
+                type: string
+        - $ref: '#/components/schemas/StoredEntity'
 
     Error:
       type: object
