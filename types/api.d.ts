@@ -31,6 +31,23 @@ export interface paths {
      */
     delete: operations["deleteCollection"];
   };
+  "/notes": {
+    /** Update an existing note */
+    put: operations["updateNote"];
+    /** Create a new note */
+    post: operations["createNote"];
+  };
+  "/collections/{collectionId}/notes": {
+    /**
+     * List all notes 
+     * @description Lists all available notes in a collection
+     */
+    get: operations["listNotesByCollectionId"];
+  };
+  "/collections/{collectionId}/notes/{noteId}": {
+    /** Delete note */
+    delete: operations["deleteNote"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -49,12 +66,14 @@ export interface components {
       /** Format: uuid */
       collectionId: string;
       name: string;
-      description?: string;
     } & components["schemas"]["StoredEntity"];
     Note: {
       /** Format: uuid */
+      collectionId: string;
+      /** Format: uuid */
       noteId: string;
-      value: string;
+      title: string;
+      content: string;
       tags: (string)[];
     } & components["schemas"]["StoredEntity"];
     Error: {
@@ -72,6 +91,21 @@ export interface components {
     CollectionResponse: {
       content: {
         "application/json": components["schemas"]["Collection"];
+      };
+    };
+    /** @description Successful operation */
+    NoteResponse: {
+      content: {
+        "application/json": components["schemas"]["Note"];
+      };
+    };
+    /** @description Successful delete */
+    DeleteSuccessResponse: {
+      content: {
+        "application/json": {
+          /** Format: uuid */
+          id?: string;
+        };
       };
     };
     /** @description Error returned in case of Server Error */
@@ -146,7 +180,6 @@ export interface operations {
      * Create a new collection 
      * @description Create a new empty collection
      */
-    /** @description Create a new pet in the store */
     requestBody: {
       content: {
         "application/json": {
@@ -198,10 +231,85 @@ export interface operations {
       };
     };
     responses: {
+      200: components["responses"]["DeleteSuccessResponse"];
+      400: components["responses"]["ValidationError"];
+      404: components["responses"]["NotFoundError"];
+      405: components["responses"]["MethodNotAllowedError"];
+      500: components["responses"]["GeneralError"];
+    };
+  };
+  updateNote: {
+    /** Update an existing note */
+    /** @description Updated note params */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Note"];
+      };
+    };
+    responses: {
+      200: components["responses"]["NoteResponse"];
+      400: components["responses"]["ValidationError"];
+      404: components["responses"]["NotFoundError"];
+      405: components["responses"]["MethodNotAllowedError"];
+      500: components["responses"]["GeneralError"];
+    };
+  };
+  createNote: {
+    /** Create a new note */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** Format: uuid */
+          collectionId: string;
+          /** @example Reminder */
+          title: string;
+          /** @example Do stuff! */
+          content: string;
+        };
+      };
+    };
+    responses: {
+      200: components["responses"]["NoteResponse"];
+      400: components["responses"]["ValidationError"];
+      405: components["responses"]["MethodNotAllowedError"];
+      500: components["responses"]["GeneralError"];
+    };
+  };
+  listNotesByCollectionId: {
+    /**
+     * List all notes 
+     * @description Lists all available notes in a collection
+     */
+    parameters: {
+        /** @description ID of the collection whose notes needs to be fetched */
+      path: {
+        collectionId: string;
+      };
+    };
+    responses: {
       /** @description Successful operation */
-      200: never;
-      /** @description Invalid ID supplied */
-      400: never;
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Note"])[];
+        };
+      };
+      405: components["responses"]["MethodNotAllowedError"];
+      500: components["responses"]["GeneralError"];
+    };
+  };
+  deleteNote: {
+    /** Delete note */
+    parameters: {
+        /** @description ID of the collection the note that needs to be deleted is in */
+        /** @description ID of the note that needs to be deleted */
+      path: {
+        collectionId: string;
+        noteId: string;
+      };
+    };
+    responses: {
+      200: components["responses"]["DeleteSuccessResponse"];
+      400: components["responses"]["ValidationError"];
       404: components["responses"]["NotFoundError"];
       405: components["responses"]["MethodNotAllowedError"];
       500: components["responses"]["GeneralError"];

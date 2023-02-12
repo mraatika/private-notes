@@ -1,20 +1,19 @@
-import { ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
   QueryCommand,
   QueryCommandInput,
+  ScanCommand,
   ScanCommandInput,
   UpdateCommand,
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuid } from 'uuid';
-import { Collection, CollectionInitObject } from '../../types';
+import { Collection, CollectionCreateRequestBody } from '../../types';
 import dbClient from '../db';
-import { mapCollectionListItem } from './CollectionMapper';
 
 const tableName = process.env.COLLECTIONS_TABLE;
 
 const CollectionService = {
-  async createCollection(initial: CollectionInitObject) {
+  async createCollection(initial: CollectionCreateRequestBody) {
     const now = Date.now();
 
     const params: UpdateCommandInput = {
@@ -60,7 +59,7 @@ const CollectionService = {
       IndexName: 'ActiveCollections',
     };
     const data = await dbClient.send(new ScanCommand(params));
-    return (data.Items ?? []).map(mapCollectionListItem);
+    return data.Items;
   },
 
   async updateCollection(collection: Collection) {

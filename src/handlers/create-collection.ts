@@ -1,5 +1,5 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { CollectionInitObject } from '../../types';
+import { CollectionCreateRequestBody } from '../../types';
 import {
   methodNotAllowedResponse,
   serverErrorResponse,
@@ -12,7 +12,7 @@ export const createCollection = async (event: APIGatewayEvent) => {
     return methodNotAllowedResponse();
   }
 
-  const body: CollectionInitObject = JSON.parse(event.body ?? '{}');
+  const body: CollectionCreateRequestBody = JSON.parse(event.body ?? '{}');
 
   console.info(
     'createCollection(): Received request to create collection',
@@ -21,7 +21,7 @@ export const createCollection = async (event: APIGatewayEvent) => {
 
   try {
     const entity = await CollectionService.createCollection(body);
-    console.info(`createCollection(): Collection updated successfully`, entity);
+    console.info(`createCollection(): Collection created successfully`, entity);
     return successResponse(entity);
   } catch (err) {
     console.info(

@@ -22,6 +22,7 @@ Globals:
       Variables:
         # Make table name accessible as environment variable from function code during execution
         COLLECTIONS_TABLE: !Ref CollectionsTable
+        NOTES_TABLE: !Ref NotesTable
 
 Parameters:
   EnvironmentParameter:
@@ -62,19 +63,17 @@ Resources:
         AllowOrigin: "'*'"
         AllowHeaders: "'X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
 
-  # Each Lambda function is defined by properties:
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-
+  # Collection enpoint handlers
+  # ---------------------------
   ListCollections:
     Type: AWS::Serverless::Function
     Properties:
       Handler: list-collections.listCollections
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-ListCollections'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
             TableName: !Ref CollectionsTable
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       BuildProperties:
         Format: cjs
@@ -89,7 +88,6 @@ Resources:
       Handler: create-collection.createCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-CreateCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
             TableName: !Ref CollectionsTable
     Metadata:
@@ -124,7 +122,6 @@ Resources:
       Handler: get-collection.getCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-GetCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
             TableName: !Ref CollectionsTable
     Metadata:
@@ -142,7 +139,6 @@ Resources:
       Handler: delete-collection.deleteCollection
       FunctionName: !Sub 'private-notes-${EnvironmentParameter}-DeleteCollection'
       Policies:
-        # Give Create/Read/Update/Delete Permissions to the CollectionsTable
         - DynamoDBCrudPolicy:
             TableName: !Ref CollectionsTable
     Metadata:
@@ -154,8 +150,79 @@ Resources:
         EntryPoints:
           - src/handlers/delete-collection.ts
 
-  # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
+  # Note enpoint handlers
+  # ---------------------------
+
+  ListNotes:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: list-notes.listNotes
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-ListNotes'
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: cjs
+        Minify: false
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/list-notes.ts
+
+  CreateNote:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: create-note.createNote
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-CreateNote'
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: cjs
+        Minify: false
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/create-note.ts
+
+  UpdateNote:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: update-note.updateNote
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-UpdateNote'
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: cjs
+        Minify: false
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/update-note.ts
+
+  DeleteNote:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: delete-note.deleteNote
+      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-DeleteNote'
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Format: cjs
+        Minify: false
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/delete-note.ts
+
+  # DB Tables
+  # ---------------------------
 
   CollectionsTable:
     Type: AWS::DynamoDB::Table
@@ -182,6 +249,25 @@ Resources:
               - name
               - updatedAt
             ProjectionType: INCLUDE
+
+  NotesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'private-notes-${EnvironmentParameter}-table-notes'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: collectionId
+          AttributeType: S
+        - AttributeName: noteId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: collectionId
+          KeyType: HASH
+        - AttributeName: noteId
+          KeyType: RANGE
+
+  # Roles and stuff
+  # ---------------------------
 
   ApiRole:
     Type: AWS::IAM::Role
@@ -212,6 +298,10 @@ Resources:
                   - !Sub ${UpdateCollection.Arn}
                   - !Sub ${GetCollection.Arn}
                   - !Sub ${DeleteCollection.Arn}
+                  - !Sub ${ListNotes.Arn}
+                  - !Sub ${CreateNote.Arn}
+                  - !Sub ${UpdateNote.Arn}
+                  - !Sub ${DeleteNote.Arn}
 
   Account:
     Type: AWS::ApiGateway::Account
