@@ -211,13 +211,13 @@ paths:
       security:
         - api_key: []
 
-  /notes:
+  /collections/{collectionId}/notes:
     post:
       tags:
         - note
       operationId: createNote
       summary: Create a new note
-      x-amazon-apigateway-request-validator: body
+      x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateNote.Arn}/invocations
@@ -226,6 +226,14 @@ paths:
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
+      parameters:
+        - name: collectionId
+          in: path
+          description: ID of the collection the note that needs to be deleted is in
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         content:
           application/json:
@@ -258,19 +266,13 @@ paths:
       security:
         - api_key: []
 
+  /collections/{collectionId}/notes/{noteId}:
     put:
       tags:
         - note
       operationId: updateNote
       summary: Update an existing note
-      x-amazon-apigateway-request-validator: body
-      requestBody:
-        description: Updated note params
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Note'
-        required: true
+      x-amazon-apigateway-request-validator: all
       x-amazon-apigateway-integration:
         uri:
           Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateNote.Arn}/invocations
@@ -279,6 +281,28 @@ paths:
         credentials:
           Fn::Sub: ${ApiRole.Arn}
         type: 'aws_proxy'
+      parameters:
+        - name: collectionId
+          in: path
+          description: ID of the collection the note that needs to be deleted is in
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: noteId
+          in: path
+          description: ID of the note that needs to be deleted
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated note params
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+        required: true
       responses:
         '200':
           $ref: '#/components/responses/NoteResponse'
@@ -293,46 +317,6 @@ paths:
       security:
         - api_key: []
 
-  /collections/{collectionId}/notes:
-    get:
-      tags:
-        - note
-      operationId: listNotesByCollectionId
-      summary: List all notes
-      description: Lists all available notes in a collection
-      x-amazon-apigateway-integration:
-        uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListNotes.Arn}/invocations
-        httpMethod: POST
-        timeoutInMillis: 15000
-        credentials:
-          Fn::Sub: ${ApiRole.Arn}
-        type: 'aws_proxy'
-      parameters:
-        - name: collectionId
-          in: path
-          description: ID of the collection whose notes needs to be fetched
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Note'
-        '405':
-          $ref: '#/components/responses/MethodNotAllowedError'
-        '500':
-          $ref: '#/components/responses/GeneralError'
-      security:
-        - api_key: []
-
-  /collections/{collectionId}/notes/{noteId}:
     delete:
       tags:
         - note
@@ -403,8 +387,11 @@ components:
               format: uuid
             name:
               type: string
+            notes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Note'
         - $ref: '#/components/schemas/StoredEntity'
-
     Note:
       allOf:
         - type: object

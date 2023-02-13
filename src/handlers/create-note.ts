@@ -4,6 +4,7 @@ import {
   methodNotAllowedResponse,
   serverErrorResponse,
   successResponse,
+  validationErrorResponse,
 } from '../responses';
 import NoteService from '../services/NoteService';
 
@@ -12,7 +13,14 @@ export const createNote = async (event: APIGatewayEvent) => {
     return methodNotAllowedResponse();
   }
 
+  const collectionId = event.pathParameters?.collectionId as string;
   const body: NoteCreateRequestBody = JSON.parse(event.body ?? '{}');
+
+  if (body.collectionId !== collectionId) {
+    return validationErrorResponse({
+      message: 'collectionId is invalid!',
+    });
+  }
 
   console.info('createNote(): Received request to create collection', body);
 

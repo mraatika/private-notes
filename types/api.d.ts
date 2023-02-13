@@ -31,20 +31,13 @@ export interface paths {
      */
     delete: operations["deleteCollection"];
   };
-  "/notes": {
-    /** Update an existing note */
-    put: operations["updateNote"];
+  "/collections/{collectionId}/notes": {
     /** Create a new note */
     post: operations["createNote"];
   };
-  "/collections/{collectionId}/notes": {
-    /**
-     * List all notes 
-     * @description Lists all available notes in a collection
-     */
-    get: operations["listNotesByCollectionId"];
-  };
   "/collections/{collectionId}/notes/{noteId}": {
+    /** Update an existing note */
+    put: operations["updateNote"];
     /** Delete note */
     delete: operations["deleteNote"];
   };
@@ -66,6 +59,7 @@ export interface components {
       /** Format: uuid */
       collectionId: string;
       name: string;
+      notes?: (components["schemas"]["Note"])[];
     } & components["schemas"]["StoredEntity"];
     Note: {
       /** Format: uuid */
@@ -238,24 +232,14 @@ export interface operations {
       500: components["responses"]["GeneralError"];
     };
   };
-  updateNote: {
-    /** Update an existing note */
-    /** @description Updated note params */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Note"];
-      };
-    };
-    responses: {
-      200: components["responses"]["NoteResponse"];
-      400: components["responses"]["ValidationError"];
-      404: components["responses"]["NotFoundError"];
-      405: components["responses"]["MethodNotAllowedError"];
-      500: components["responses"]["GeneralError"];
-    };
-  };
   createNote: {
     /** Create a new note */
+    parameters: {
+        /** @description ID of the collection the note that needs to be deleted is in */
+      path: {
+        collectionId: string;
+      };
+    };
     requestBody: {
       content: {
         "application/json": {
@@ -275,24 +259,26 @@ export interface operations {
       500: components["responses"]["GeneralError"];
     };
   };
-  listNotesByCollectionId: {
-    /**
-     * List all notes 
-     * @description Lists all available notes in a collection
-     */
+  updateNote: {
+    /** Update an existing note */
     parameters: {
-        /** @description ID of the collection whose notes needs to be fetched */
+        /** @description ID of the collection the note that needs to be deleted is in */
+        /** @description ID of the note that needs to be deleted */
       path: {
         collectionId: string;
+        noteId: string;
+      };
+    };
+    /** @description Updated note params */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Note"];
       };
     };
     responses: {
-      /** @description Successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Note"])[];
-        };
-      };
+      200: components["responses"]["NoteResponse"];
+      400: components["responses"]["ValidationError"];
+      404: components["responses"]["NotFoundError"];
       405: components["responses"]["MethodNotAllowedError"];
       500: components["responses"]["GeneralError"];
     };

@@ -124,6 +124,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref CollectionsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotesTable
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -152,23 +154,6 @@ Resources:
 
   # Note enpoint handlers
   # ---------------------------
-
-  ListNotes:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: list-notes.listNotes
-      FunctionName: !Sub 'private-notes-${EnvironmentParameter}-ListNotes'
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref NotesTable
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Format: cjs
-        Minify: false
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/list-notes.ts
 
   CreateNote:
     Type: AWS::Serverless::Function
@@ -298,7 +283,6 @@ Resources:
                   - !Sub ${UpdateCollection.Arn}
                   - !Sub ${GetCollection.Arn}
                   - !Sub ${DeleteCollection.Arn}
-                  - !Sub ${ListNotes.Arn}
                   - !Sub ${CreateNote.Arn}
                   - !Sub ${UpdateNote.Arn}
                   - !Sub ${DeleteNote.Arn}

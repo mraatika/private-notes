@@ -9,6 +9,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Collection, CollectionCreateRequestBody } from '../../types';
 import dbClient from '../db';
+import NoteService from './NoteService';
 
 const tableName = process.env.COLLECTIONS_TABLE;
 
@@ -50,7 +51,14 @@ const CollectionService = {
     };
 
     const data = await dbClient.send(new QueryCommand(params));
-    return data.Items?.[0];
+    const collection = data.Items?.[0];
+
+    if (!collection) {
+      return undefined;
+    }
+
+    const notes = await NoteService.listNotes(collectionId);
+    return { ...collection, notes: notes ?? [] };
   },
 
   async listCollections() {

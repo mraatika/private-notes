@@ -4,6 +4,7 @@ import {
   methodNotAllowedResponse,
   serverErrorResponse,
   successResponse,
+  validationErrorResponse,
 } from '../responses';
 import NoteService from '../services/NoteService';
 
@@ -12,7 +13,15 @@ export const updateNote = async (event: APIGatewayEvent) => {
     return methodNotAllowedResponse();
   }
 
+  const collectionId = event.pathParameters?.collectionId as string;
+  const noteId = event.pathParameters?.noteId as string;
   const body: Note = JSON.parse(event.body ?? '{}');
+
+  if (body.noteId !== noteId || body.collectionId !== collectionId) {
+    return validationErrorResponse({
+      message: 'NoteId and/or collectionId is invalid!',
+    });
+  }
 
   console.info('updateNote(): Received request to update note', body);
 

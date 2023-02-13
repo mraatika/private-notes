@@ -27,6 +27,12 @@ export const serverErrorResponse = (body: ErrorResponseBody) =>
     body: JSON.stringify(body),
   });
 
+export const validationErrorResponse = (body: ErrorResponseBody) =>
+  withCorsHeaders({
+    statusCode: 400,
+    body: JSON.stringify(body),
+  });
+
 export const notFoundResponse = (body: ErrorResponseBody) =>
   withCorsHeaders({
     statusCode: 404,
