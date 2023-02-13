@@ -50,7 +50,7 @@ Resources:
         Fn::Transform:
           Name: AWS::Include
           Parameters:
-            Location: ./api/openapi.yaml
+            Location: ../../packages/api/private-notes-api.yaml
       Auth:
         ApiKeyRequired: true
         UsagePlan:

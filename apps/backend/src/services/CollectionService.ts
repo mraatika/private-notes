@@ -7,7 +7,7 @@ import {
   UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuid } from 'uuid';
-import { Collection, CollectionCreateRequestBody } from '../../types';
+import { Collection, CollectionCreateRequestBody } from '../types';
 import dbClient from '../db';
 import NoteService from './NoteService';
 

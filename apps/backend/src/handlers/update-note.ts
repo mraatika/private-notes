@@ -1,5 +1,5 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { Note } from '../../types';
+import { Note } from '../types';
 import {
   methodNotAllowedResponse,
   serverErrorResponse,

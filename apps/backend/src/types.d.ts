@@ -1,4 +1,7 @@
-import { components, operations } from './api';
+import {
+  components,
+  operations,
+} from 'private-notes-api/dist/private-notes-api';
 
 export type CollectionCreateRequestBody =
   operations['createCollection']['requestBody']['content']['application/json'];

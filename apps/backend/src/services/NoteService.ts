@@ -5,7 +5,7 @@ import {
   QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuid } from 'uuid';
-import { Note, NoteCreateRequestBody } from '../../types';
+import { Note, NoteCreateRequestBody } from '../types';
 import dbClient from '../db';
 import { mapNoteToDto } from './ResultMapper';
 

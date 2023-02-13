@@ -1,5 +1,6 @@
-# sam build
+# builds
 .aws-sam
+dist
 
 # ide
 .vscode

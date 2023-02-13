@@ -1,0 +1,13 @@
+{
+  "name": "private-notes-api",
+  "version": "0.1.0",
+  "author": "Miitri Raatikainen",
+  "description": "Private Notes api specification",
+  "private": true,
+  "scripts": {
+    "openapi2ts": "pnpm openapi-typescript private-notes-api.yaml --output dist/private-notes-api.d.ts"
+  },
+  "dependencies": {
+    "openapi-typescript": "^6.1.0"
+  }
+}

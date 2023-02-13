@@ -4,8 +4,5 @@
     "plugin:@typescript-eslint/recommended",
     "eslint-config-prettier"
   ],
-  "plugins": ["@typescript-eslint"],
-  "env": {
-    "browser": false
-  }
+  "plugins": ["@typescript-eslint"]
 }
