@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "private-notes-web",
+  "short_name": "PrivateNotes",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "A web client for private notes."
+}
