@@ -5,9 +5,13 @@
   "description": "Private Notes api specification",
   "private": true,
   "scripts": {
-    "openapi2ts": "pnpm openapi-typescript private-notes-api.yaml --output dist/private-notes-api.d.ts"
+    "build": "pnpm build:api && pnpm build:docs",
+    "build:api": "pnpm openapi-typescript private-notes-api.yaml --output dist/private-notes-api.d.ts",
+    "build:docs": "pnpm redoc-cli build private-notes-api.yaml",
+    "deploy:dev": "pnpm build && node scripts/deploy.js --env dev"
   },
   "dependencies": {
-    "openapi-typescript": "^6.1.0"
+    "openapi-typescript": "^6.1.0",
+    "redoc-cli": "^0.13.20"
   }
 }

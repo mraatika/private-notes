@@ -1,0 +1,10 @@
+{
+  "name": "private-notes-infra",
+  "version": "0.1.0",
+  "description": "More permanent infrastructure for private-notes",
+  "author": "Miitri Raatikainen",
+  "private": true,
+  "scripts": {
+    "deploy:dev": "aws cloudformation deploy --template ./template.yaml --stack-name private-notes-api-dev"
+  }
+}

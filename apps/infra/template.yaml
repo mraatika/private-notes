@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Permanent parts of private-notes project's infrastructure
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  EnvironmentParameter:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: dev, prod
+Resources:
+  PrivateNotesApiBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'private-notes-${EnvironmentParameter}-api-bucket'
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Delete
+  PrivateNotesApiBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: !Sub 'PrivateNotesApiBucketPolicy-${EnvironmentParameter}'
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref PrivateNotesApiBucket
+                - /*
+      Bucket: !Ref PrivateNotesApiBucket
+
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt
+      - PrivateNotesApiBucket
+      - WebsiteURL
+    Description: URL for swagger documentation hosted on S3
+  S3BucketSecureURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - PrivateNotesApiBucket
+          - DomainName
+    Description: Name of the private notes api bucket to hold website content
