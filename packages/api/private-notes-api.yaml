@@ -51,6 +51,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Collection'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '405':
           $ref: '#/components/responses/MethodNotAllowedError'
         '500':
@@ -90,6 +92,8 @@ paths:
           $ref: '#/components/responses/CollectionResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '405':
           $ref: '#/components/responses/MethodNotAllowedError'
         '500':
@@ -123,6 +127,8 @@ paths:
           $ref: '#/components/responses/CollectionResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '405':
@@ -165,6 +171,8 @@ paths:
                 $ref: '#/components/schemas/Collection'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '405':
@@ -202,6 +210,8 @@ paths:
           $ref: '#/components/responses/DeleteSuccessResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '405':
@@ -259,6 +269,8 @@ paths:
           $ref: '#/components/responses/NoteResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '405':
           $ref: '#/components/responses/MethodNotAllowedError'
         '500':
@@ -308,6 +320,8 @@ paths:
           $ref: '#/components/responses/NoteResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '405':
@@ -351,6 +365,8 @@ paths:
           $ref: '#/components/responses/DeleteSuccessResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
         '405':
@@ -476,6 +492,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+
+    ForbiddenError:
+      description: Forbidden
 
   securitySchemes:
     api_key:

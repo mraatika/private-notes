@@ -1,0 +1,8 @@
+{
+  "name": "private-notes-persist",
+  "version": "0.1.0",
+  "description": "Persistence manager for private-notes",
+  "author": "Miitri Raatikainen",
+  "private": true,
+  "main": "index.ts"
+}

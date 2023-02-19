@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "openapi-typescript": "^6.1.0",
+    "private-notes-persist": "workspace:^0.1.0",
     "redoc-cli": "^0.13.20"
   }
 }
