@@ -52,16 +52,15 @@ Resources:
           Parameters:
             Location: ../../packages/api/private-notes-api.yaml
       Auth:
-        ApiKeyRequired: true
+        AddDefaultAuthorizerToCorsPreflight: False
         UsagePlan:
           CreateUsagePlan: PER_API
           Description: Usage plan for default api key
           UsagePlanName: !Sub 'private-notes-${EnvironmentParameter}-api-usage-plan'
-
       Cors:
         AllowMethods: "'OPTIONS,POST,GET,PUT,DELETE'"
         AllowOrigin: "'*'"
-        AllowHeaders: "'X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+        AllowHeaders: "'*'"
 
   # Collection enpoint handlers
   # ---------------------------

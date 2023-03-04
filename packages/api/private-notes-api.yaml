@@ -20,8 +20,6 @@ x-amazon-apigateway-request-validators:
     validateRequestBody: true
     validateRequestParameters: false
 
-x-amazon-apigateway-api-key-source: HEADER
-
 servers:
   - url: http://localhost:3000
     description: 'Local server'
