@@ -5,7 +5,12 @@
   "description": "Private Notes monorepo",
   "private": true,
   "scripts": {
-    "api-to-ts": "pnpm --filter private-notes-api openapi2ts"
+    "api-to-ts": "pnpm --filter private-notes-api openapi2ts",
+    "api": "pnpm --filter private-notes-api",
+    "persist": "pnpm --filter private-notes-persist",
+    "backend": "pnpm --filter private-notes-backend",
+    "infra": "pnpm --filter private-notes-infra",
+    "web": "pnpm --filter private-notes-web"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.50.0",
