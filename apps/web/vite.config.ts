@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite';
-import { qwikVite } from '@builder.io/qwik/optimizer';
-import { qwikCity } from '@builder.io/qwik-city/vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import * as path from 'path';
 
-export default defineConfig(() => {
-  return {
-    plugins: [qwikCity(), qwikVite(), tsconfigPaths()],
-    preview: {
-      headers: {
-        'Cache-Control': 'public, max-age=600',
-      },
+// https://vitejs.dev/config/
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
     },
-  };
+  },
+  plugins: [svelte()],
+  optimizeDeps: { exclude: ['svelte-navigator'] },
 });
