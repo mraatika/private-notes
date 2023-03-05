@@ -1,0 +1,17 @@
+{
+  "name": "private-notes-cli",
+  "version": "0.1.0",
+  "description": "Private notes node client",
+  "author": "Miitri Raatikainen",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js"
+  },
+  "dependencies": {
+    "chalk": "4.1.2",
+    "dotenv": "^16.0.3",
+    "private-notes-api": "workspace:^0.1.0",
+    "private-notes-persist": "workspace:^0.1.0"
+  }
+}

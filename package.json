@@ -9,7 +9,8 @@
     "persist": "pnpm --filter private-notes-persist",
     "backend": "pnpm --filter private-notes-backend",
     "infra": "pnpm --filter private-notes-infra",
-    "web": "pnpm --filter private-notes-web"
+    "web": "pnpm --filter private-notes-web",
+    "cli": "pnpm --filter private-notes-cli"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.50.0",
