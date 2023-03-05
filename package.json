@@ -5,7 +5,6 @@
   "description": "Private Notes monorepo",
   "private": true,
   "scripts": {
-    "api-to-ts": "pnpm --filter private-notes-api openapi2ts",
     "api": "pnpm --filter private-notes-api",
     "persist": "pnpm --filter private-notes-persist",
     "backend": "pnpm --filter private-notes-backend",
