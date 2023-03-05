@@ -4,5 +4,11 @@
   "description": "Persistence manager for private-notes",
   "author": "Miitri Raatikainen",
   "private": true,
-  "main": "index.ts"
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "vitest": "^0.29.2"
+  }
 }

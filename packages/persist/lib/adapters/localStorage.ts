@@ -1,5 +1,5 @@
 import { resolveExpiry } from './_util';
-import type { PersistAdapter, PersistProps } from '../types';
+import type { PersistAdapter, PersistProps } from '../PersistAdapter';
 
 interface LocalStorageEntry<T = unknown> {
   expires: number;
@@ -7,11 +7,11 @@ interface LocalStorageEntry<T = unknown> {
 }
 
 const localStorageAdapter: PersistAdapter = {
-  put(key, data, props: PersistProps = {}) {
+  put(key, data, props?: PersistProps) {
     try {
       const json = {
         expires: resolveExpiry(props),
-        data: JSON.stringify(data),
+        data,
       };
       localStorage.setItem(key, JSON.stringify(json));
     } catch (e) {
@@ -27,11 +27,11 @@ const localStorageAdapter: PersistAdapter = {
     }
 
     try {
-      const { expires, data } = JSON.parse(item) as LocalStorageEntry<T>;
+      const { expires, data } = JSON.parse(item) as LocalStorageEntry<string>;
 
       // if the entry is still valid
       if (expires >= Date.now()) {
-        return data;
+        return data as T;
       } else {
         // if the entry is not valid then remove the item
         localStorageAdapter.remove(key);
