@@ -12,9 +12,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "openapi-typescript": "^6.1.0",
+    "openapi-typescript": "^6.2.4",
     "private-notes-persist": "workspace:^0.1.0",
-    "redoc-cli": "^0.13.20",
-    "vitest": "^0.29.2"
+    "redoc-cli": "^0.13.21",
+    "vitest": "^0.31.0"
   }
 }
