@@ -7,14 +7,14 @@
   "scripts": {
     "build": "pnpm build:api && pnpm build:docs",
     "build:api": "pnpm openapi-typescript lib/private-notes-api.yaml --output dist/private-notes-api.d.ts",
-    "build:docs": "pnpm redoc-cli build lib/private-notes-api.yaml && mv redoc-static.html dist/private-notes-api.html",
+    "build:docs": "pnpm redocly build-docs lib/private-notes-api.yaml --output=dist/private-notes-api.html",
     "deploy:dev": "pnpm build && node scripts/deploy.js --env dev",
     "test": "vitest"
   },
   "dependencies": {
-    "openapi-typescript": "^6.2.4",
+    "@redocly/cli": "^1.25.3",
+    "openapi-typescript": "^7.4.1",
     "private-notes-persist": "workspace:^0.1.0",
-    "redoc-cli": "^0.13.21",
-    "vitest": "^0.31.0"
+    "vitest": "^2.1.1"
   }
 }

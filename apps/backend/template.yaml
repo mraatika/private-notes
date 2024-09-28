@@ -50,7 +50,7 @@ Resources:
         Fn::Transform:
           Name: AWS::Include
           Parameters:
-            Location: ../../packages/api/private-notes-api.yaml
+            Location: ../../packages/api/lib/private-notes-api.yaml
       Auth:
         AddDefaultAuthorizerToCorsPreflight: False
         UsagePlan:

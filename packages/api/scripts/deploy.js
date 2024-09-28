@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const [, env = 'dev'] = process.argv.slice(2);
+const DOCS_FILENAME = 'private-notes-api.html';
 
 console.log(`Deploying docs to ${env} environment`);
 
@@ -12,7 +13,10 @@ if (!fs.existsSync(distDir)) {
 }
 
 // move the static docs html file to dist and rename it to index.html
-fs.renameSync('redoc-static.html', path.join(distDir, 'index.html'));
+fs.renameSync(
+  path.join(distDir, DOCS_FILENAME),
+  path.join(distDir, 'index.html'),
+);
 
 console.log(`Uploading docs and types to bucket`);
 

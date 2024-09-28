@@ -9,8 +9,8 @@
     "start": "node ./src/index.js"
   },
   "dependencies": {
-    "chalk": "5.2.0",
-    "dotenv": "^16.0.3",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.4.5",
     "private-notes-api": "workspace:^0.1.0",
     "private-notes-persist": "workspace:^0.1.0"
   }
