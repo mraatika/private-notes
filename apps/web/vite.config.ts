@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import * as path from 'path';
+import Icons from 'unplugin-icons/vite';
+import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,6 +10,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  plugins: [svelte()],
+  plugins: [
+    svelte(),
+    Icons({
+      compiler: 'svelte',
+    }),
+  ],
   optimizeDeps: { exclude: ['svelte-navigator'] },
 });
