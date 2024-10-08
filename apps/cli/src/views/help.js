@@ -1,6 +1,6 @@
 const views = {
   main: `
-        private-notes-cli [command] [type] <options>
+        $ [command] [type] <options>
 
         [command]
           add ............. Create a new [type]
@@ -8,6 +8,7 @@ const views = {
           update .......... Update [type]
           help ............ Show this help
           version ......... Display the app version
+          exit ............ Exit the script
         `,
 };
 
